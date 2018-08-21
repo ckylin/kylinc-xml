@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/kylinc-xml.iml" filepath="$PROJECT_DIR$/kylinc-xml.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/kylinc-xml_main.iml" filepath="$PROJECT_DIR$/.idea/modules/kylinc-xml_main.iml" group="kylinc-xml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/kylinc-xml_test.iml" filepath="$PROJECT_DIR$/.idea/modules/kylinc-xml_test.iml" group="kylinc-xml" />
+    </modules>
+  </component>
+</project>
