@@ -8,7 +8,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class LibraryTest {
-    String xml = "<notes>\n" +
+    String xml = "<?xml version='1.1' encoding='gb2312'?>'" +
+            "<notes>\n" +
             "    <note>\n" +
             "        <to>George</to>\n" +
             "        <from>John</from>\n" +
@@ -16,7 +17,8 @@ public class LibraryTest {
             "        <body>Don't forget the meeting!</body>\n" +
             "    </note>\n" +
             "    <note>\n" +
-            "        <to>George</to>\n" +
+            "        <to>George</to>" +
+            "        <!-- 这是让哥哥的独家注解 -->\n" +
             "        <from>John</from>\n" +
             "        <heading>Reminder</heading>\n" +
             "        <body id='2323232'>" +

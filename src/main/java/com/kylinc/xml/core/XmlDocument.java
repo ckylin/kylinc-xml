@@ -10,6 +10,8 @@ import java.util.List;
 
 public class XmlDocument extends XmlNode{
 
+    private XmlStatement xmlStatement;
+
     private String rootTag;
 
     private LinkedList<XmlElement> childElements = new LinkedList<>();
@@ -46,25 +48,50 @@ public class XmlDocument extends XmlNode{
 
     }
 
+    public void setXmlStatement(XmlStatement xmlStatement) {
+        this.xmlStatement = xmlStatement;
+    }
+
+    public XmlStatement getXmlStatement() {
+        return xmlStatement;
+    }
+
     public static XmlDocument createDocumentByXml(String xml) throws XmlException {
         XmlDocument xmlDocument = new XmlDocument();
 
-        XmlParseData xmlData = XmlParser.parseXml(xml);
+        xmlDocument.setXmlStatement(XmlParser.parseStatement(xml));
+
+        if(xmlDocument.getXmlStatement().getOffset()+1>=xml.length()-1){
+            throw new XmlException("the xml have no data");
+        }
+        XmlParseData xmlData = XmlParser.parseXml(xml.substring(xmlDocument.getXmlStatement().getOffset()+1));
 
         Iterator<XmlElement> iterator = xmlData.getXmlElements().iterator();
+
+        XmlElement rootElement = xmlData.getXmlElements().getFirst();
+
+        xmlDocument.setRootTag(rootElement.getTag());
         while(iterator.hasNext()){
             XmlElement xmlElement = iterator.next();
+            if(xmlElement instanceof XmlComment){
+                ((XmlElement)(xmlElement.getParentNode())).appendChild(xmlElement);
+                continue;
+            }
+            if(!xmlElement.isEnd()){
+                throw new XmlException("tag:"+xmlElement.getTag()+"is not closed");
+            }
             if(xmlElement.getParentNode()==null){
-                if(xmlDocument.getRootTag()==null)
-                    xmlDocument.setRootTag(xmlElement.getTag());
-                else
+                if(xmlElement!=rootElement)
                     throw new XmlException("root tag must be only one");
             }else{
+
                 if( xmlElement.getParentNode() instanceof XmlElement ) {
-                    if(((XmlElement) xmlElement.getParentNode()).getTag().equals(xmlDocument.getRootTag()))
+                    if(((XmlElement) xmlElement.getParentNode()).getTag().equals(xmlDocument.getRootTag())) {
                         xmlDocument.appendChild(xmlElement);
-                    else
-                        ((XmlElement)(xmlElement.getParentNode())).appendChild(xmlElement);
+                        xmlElement.setParentNode(xmlDocument);
+                    }else {
+                        ((XmlElement) (xmlElement.getParentNode())).appendChild(xmlElement);
+                    }
                 }
             }
         }
@@ -118,16 +145,20 @@ public class XmlDocument extends XmlNode{
                     continue;
 
 
-                if(element.getTag().equals(tag) && index==num){
-                    if(n==xpathList.size()-1){
-                        return element;
+                if(!(element instanceof XmlComment)){
+                    if(element.getTag().equals(tag) && index==num) {
+                        if (n == xpathList.size() - 1) {
+                            return element;
+                        }
+                        xmlElements = element.getChildElements();
+                        isFound = true;
+                        break;
                     }
-                    xmlElements = element.getChildElements();
-                    isFound = true;
-                    break;
-                }
-                if(element.getTag().equals(tag))
+
+                    if(element.getTag().equals(tag))
                     num++;
+                }
+
             }
 
             if(!isFound)

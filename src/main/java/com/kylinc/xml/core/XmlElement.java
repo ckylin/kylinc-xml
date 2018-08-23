@@ -18,43 +18,43 @@ public class XmlElement extends XmlNode {
     private LinkedList<XmlElement> childElements = new LinkedList<>();
 
     //添加子节点
-    public void appendChild(XmlElement xmlElement){
+    public void appendChild(XmlElement xmlElement) throws XmlException {
         childElements.addLast(xmlElement);
     }
 
-    public String getTag() {
+    public String getTag() throws XmlException {
         return tag;
     }
 
-    public void setTag(String tag) {
+    public void setTag(String tag) throws XmlException {
         this.tag = tag;
     }
 
-    public boolean isEnd() {
+    public boolean isEnd() throws XmlException {
         return isEnd;
     }
 
-    public void setEnd(boolean end) {
+    public void setEnd(boolean end) throws XmlException {
         isEnd = end;
     }
 
-    public XmlAttribute getXmlAttribute() {
+    public XmlAttribute getXmlAttribute() throws XmlException {
         return xmlAttribute;
     }
 
-    public void setXmlAttribute(XmlAttribute xmlAttribute) {
+    public void setXmlAttribute(XmlAttribute xmlAttribute) throws XmlException {
         this.xmlAttribute = xmlAttribute;
     }
 
-    public XmlText getXmlText() {
+    public XmlText getXmlText() throws XmlException {
         return xmlText;
     }
 
-    public void setXmlText(XmlText xmlText) {
+    public void setXmlText(XmlText xmlText) throws XmlException {
         this.xmlText = xmlText;
     }
 
-    public LinkedList<XmlElement> getChildElements() {
+    public LinkedList<XmlElement> getChildElements() throws XmlException {
         return childElements;
     }
 
