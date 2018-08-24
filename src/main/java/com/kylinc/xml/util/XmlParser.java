@@ -24,16 +24,16 @@ public class XmlParser {
         int offset = 0;
         int last = 0;
 
-        String status = "startTag";
+        XmlFlag flag = XmlFlag.none;
         for(char c:chars){
             if(c=='<'){
-                if(!status.equals("commentStartTag")) {
+                if(flag!=XmlFlag.commentStartTag) {
                     if (offset + 1 >= chars.length) {
                         throw new RuntimeException("position " + offset + " token error");
                     }
 
                     if (chars[offset + 1] == '/') {
-                        if (status.equals("text") && last < offset) {
+                        if (flag==XmlFlag.text && last < offset) {
 
                             XmlText xmlText = new XmlText();
                             xmlText.setText(xml.substring(last, offset));
@@ -56,24 +56,24 @@ public class XmlParser {
                             }
                         }
                         last = offset + 2;
-                        status = "endTag";
+                        flag = XmlFlag.endTag;
 
 
                     } else if (chars[offset + 1] == '!' && chars[offset + 2] == '-' && chars[offset + 3] == '-') {
                         last = offset + 4;
-                        status = "commentStartTag";
+                        flag = XmlFlag.commentStartTag;
                     } else if ((chars[offset + 1] >= 65 && chars[offset] <= 90) || (chars[offset + 1] >= 97 && chars[offset] <= 122)) {
                         last = offset + 1;
-                        status = "startTag";
+                        flag = XmlFlag.startTag;
                     } else {
-                        if(!status.equals("text"))
+                        if(flag!=XmlFlag.text && flag!=XmlFlag.none)
                         throw new XmlException("position " + offset + " token error");
                     }
                 }
             }
 
             if(c=='>'){
-                if(!status.equals("commentStartTag")) {
+                if(flag!=XmlFlag.commentStartTag) {
                     if (chars[offset - 1] == '/') {
                         if (!xmlElements.getLast().isEnd()) {
                             xmlElements.getLast().setEnd(true);
@@ -98,7 +98,7 @@ public class XmlParser {
 
 
                     } else {
-                        if (status.equals("endTag")) {
+                        if (flag==XmlFlag.endTag) {
                             Iterator<XmlElement> iterator = xmlElements.descendingIterator();
                             String tag = xml.substring(last, offset);
 
@@ -122,9 +122,9 @@ public class XmlParser {
                             } else {
                                 throw new XmlException("position " + offset + " token error");
                             }
-                        } else if (status.equals("attrKey") || status.equals("attrValue")) {
-                            status = "text";
-                        } else if (status.equals("text")) {
+                        } else if (flag==XmlFlag.attrKey || flag==XmlFlag.attrValue) {
+                            flag = XmlFlag.text;
+                        } else if (flag==XmlFlag.text) {
 
                         }else{
                             tagCheckList.add(xml.substring(last, offset));
@@ -143,7 +143,7 @@ public class XmlParser {
                             }
                             xmlElements.add(xmlElement);
 
-                            status = "text";
+                            flag = XmlFlag.text;
                         }
                     }
                     last=offset+1;
@@ -166,7 +166,7 @@ public class XmlParser {
 
                         xmlElements.add(xmlComment);
 
-                        status = "commentEndTag";
+                        flag = XmlFlag.commentEndTag;
 
                         last = offset+1;
                     }
@@ -175,8 +175,8 @@ public class XmlParser {
 
             }
 
-            if(c==' ' && chars[offset-1]!=' '){
-                if(status.equals("startTag")){
+            if(c==' ' && offset-1>=0 && chars[offset-1]!=' '){
+                if(flag==XmlFlag.startTag){
                     XmlElement xmlElement = new XmlElement();
                     xmlElement.setTag(xml.substring(last,offset));
                     Iterator<XmlElement> iterator = xmlElements.descendingIterator();
@@ -195,7 +195,7 @@ public class XmlParser {
                     tagCheckList.add(xml.substring(last, offset));
                     last = offset+1;
 
-                    status = "attrKey";
+                    flag = XmlFlag.attrKey;
                 }
 //                else if(status.equals("endTag")){
 //
@@ -210,23 +210,23 @@ public class XmlParser {
             }
 
             if(c=='='){
-                if(status.equals("attrKey")){
+                if(flag==XmlFlag.attrKey){
                     String attrKey = xml.substring(last,offset).trim();
                     if(attrKey==null || attrKey.equals("")){
                         throw new RuntimeException("position "+offset+" token error");
                     }
                     attrList.add(attrKey);
                     last = offset+1;
-                    status="attrValueFrom";
+                    flag=XmlFlag.attrValueFrom;
                 }
             }
 
             if(c=='\"' || c=='\''){
-                if(status.equals("attrValueFrom")){
-                    status = "attrValueTo";
+                if(flag==XmlFlag.attrValueFrom){
+                    flag = XmlFlag.attrValueTo;
 
                     last = offset+1;
-                }else if(status.equals("attrValueTo")){
+                }else if(flag==XmlFlag.attrValueTo){
                     attrList.add(xml.substring(last,offset));
 
                     XmlAttribute xmlAttribute = null;
@@ -250,7 +250,7 @@ public class XmlParser {
                         throw new XmlException("position "+offset+" token error");
 
                     last = offset+1;
-                    status = "attrKey";
+                    flag = XmlFlag.attrKey;
                 }
             }
             offset++;
@@ -302,6 +302,25 @@ public class XmlParser {
 
             if(!isState){
                 throw new XmlException("xml statement is not closed,can't find end tag");
+            }
+        }else{
+            char[] chars = xml.toCharArray();
+            boolean findFirst =false;
+            int start = 0;
+            for(int offset=0;offset<chars.length;offset++){
+
+                if(chars[offset]=='<'){
+                    start = offset;
+                    findFirst = true;
+                }
+
+                if((chars[offset]==' ' || chars[offset]=='>' || chars[offset]=='/')&& start<offset && findFirst){
+                    String tag = xml.substring(start,offset);
+                    if(tag.startsWith("<?xml"))
+                        throw new XmlException("xml statement is not at first");
+
+                    break;
+                }
             }
         }
 

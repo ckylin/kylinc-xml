@@ -8,7 +8,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class LibraryTest {
-    String xml = "<?xml version='1.1' encoding='gb2312'?>'" +
+    String xml = "<?xml version='1.1' " +
+            "encoding='gb2312'?>'" +
             "<notes>\n" +
             "    <note>\n" +
             "        <to>George</to>\n" +
@@ -47,6 +48,21 @@ public class LibraryTest {
 //            assertEquals("2323232",xmlElement.getAttribute("id"));
             assertEquals("Don't forget the meeting!",xmlElement.getText().trim());
         } catch (XmlException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test public void testFindXmlFileByXpath(){
+        String xmlFile = "/tmp/test/pom.xml";
+        try {
+            XmlDocument xmlDocument = XmlDocument.createDocumentByFile(xmlFile);
+
+            XmlElement xmlElement = xmlDocument.xpath("modules.module");
+
+            System.out.println(xmlElement);
+        } catch (XmlException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

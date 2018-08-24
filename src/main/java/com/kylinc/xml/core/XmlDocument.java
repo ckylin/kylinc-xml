@@ -4,6 +4,7 @@ import com.kylinc.xml.exception.XmlException;
 import com.kylinc.xml.util.XmlParser;
 import com.kylinc.xml.util.XPathUtil;
 
+import java.io.*;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,6 +55,33 @@ public class XmlDocument extends XmlNode{
 
     public XmlStatement getXmlStatement() {
         return xmlStatement;
+    }
+
+    public static XmlDocument createDocumentByFile(String xmlFile) throws Exception {
+
+        XmlStatement xmlStatement = null;
+        try(BufferedReader br = new BufferedReader(new FileReader(xmlFile));){
+            String line = null;
+            StringBuffer sb = new StringBuffer();
+            while((line=br.readLine())!=null){
+                sb.append(line).append("\n");
+            }
+
+            xmlStatement = XmlParser.parseStatement(sb.toString());
+
+            sb = new StringBuffer();
+            line = null;
+            try(BufferedReader charsetBr = new BufferedReader(new InputStreamReader(new FileInputStream(xmlFile),xmlStatement.getEncoding()));){
+                while((line=charsetBr.readLine())!=null){
+                    sb.append(line).append("\n");
+                }
+
+                return createDocumentByXml(sb.toString().substring(xmlStatement.getOffset()+1));
+            }
+        }catch (Exception e){
+            throw e;
+        }
+
     }
 
     public static XmlDocument createDocumentByXml(String xml) throws XmlException {
