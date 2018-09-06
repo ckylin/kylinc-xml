@@ -62,7 +62,7 @@ public class XmlParser {
                     } else if (chars[offset + 1] == '!' && chars[offset + 2] == '-' && chars[offset + 3] == '-') {
                         last = offset + 4;
                         flag = XmlFlag.commentStartTag;
-                    } else if ((chars[offset + 1] >= 65 && chars[offset] <= 90) || (chars[offset + 1] >= 97 && chars[offset] <= 122)) {
+                    } else if ((chars[offset + 1] >= 65 && chars[offset+1] <= 90) || (chars[offset + 1] >= 97 && chars[offset+1] <= 122)) {
                         last = offset + 1;
                         flag = XmlFlag.startTag;
                     } else {
@@ -76,8 +76,27 @@ public class XmlParser {
                 if(flag!=XmlFlag.commentStartTag) {
                     if (chars[offset - 1] == '/') {
                         if (!xmlElements.getLast().isEnd()) {
-                            xmlElements.getLast().setEnd(true);
-                            tagCheckList.remove(tagCheckList.size() - 1);
+                            if(flag != XmlFlag.startTag) {
+                                xmlElements.getLast().setEnd(true);
+                                tagCheckList.remove(tagCheckList.size() - 1);
+                            }else{
+                                XmlElement xmlElement = new XmlElement();
+                                xmlElement.setTag(xml.substring(last, offset - 1));
+                                xmlElement.setEnd(true);
+                                Iterator<XmlElement> iterator = xmlElements.descendingIterator();
+                                while (iterator.hasNext()) {
+                                    XmlElement element = iterator.next();
+                                    if(element instanceof XmlComment){
+                                        continue;
+                                    }
+                                    if (!element.isEnd()) {
+                                        xmlElement.setParentNode(element);
+                                        break;
+                                    }
+                                }
+                                xmlElements.addLast(xmlElement);
+
+                            }
                         } else {
                             XmlElement xmlElement = new XmlElement();
                             xmlElement.setTag(xml.substring(last, offset - 1));
@@ -95,7 +114,7 @@ public class XmlParser {
                             }
                             xmlElements.addLast(xmlElement);
                         }
-
+                        flag = XmlFlag.none;
 
                     } else {
                         if (flag==XmlFlag.endTag) {
@@ -325,28 +344,5 @@ public class XmlParser {
         }
 
         return xmlStatement;
-    }
-
-    public static void main(String[] args) throws XmlException {
-        String xml = "<notes>\n" +
-                "    <note>\n" +
-                "        <to>George</to>\n" +
-                "        <from>John</from>\n" +
-                "        <heading id = \"=test\"  name = \"test\">Reminder</heading>\n" +
-                "        <body>Don't forget the meeting!</body>\n" +
-                "    </note>\n" +
-                "    <note>\n" +
-                "        <to>George</to>\n" +
-                "        <from>John</from>\n" +
-                "        <heading>Reminder</heading>\n" +
-                "        <body id='2323232'>" +
-                "           <property name='message'>" +
-                "           Don't forget the meeting!" +
-                "           </property>" +
-                "        </body>\n" +
-                "    </note>\n" +
-                "</notes>";
-
-        parseXml(xml);
     }
 }

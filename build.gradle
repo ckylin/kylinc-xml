@@ -9,7 +9,10 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id 'java-library'
+    id 'maven'
 }
+
+version '1.0'
 
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
@@ -27,4 +30,17 @@ repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "http://118.24.54.116:8081/repository/maven-releases/") {
+                authentication(userName: "admin", password: "admin123")
+            }
+            pom.version = "1.0"
+            pom.artifactId = "kylinc-xml"
+            pom.groupId = "com.kylinc.xml"
+        }
+    }
 }

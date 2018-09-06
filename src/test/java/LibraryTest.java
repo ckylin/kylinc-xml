@@ -8,27 +8,51 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class LibraryTest {
-    String xml = "<?xml version='1.1' " +
-            "encoding='gb2312'?>'" +
-            "<notes>\n" +
-            "    <note>\n" +
-            "        <to>George</to>\n" +
-            "        <from>John</from>\n" +
-            "        <heading id = \"=test\"  name = \"test\">Reminder</heading>\n" +
-            "        <body>Don't forget the meeting!</body>\n" +
-            "    </note>\n" +
-            "    <note>\n" +
-            "        <to>George</to>" +
-            "        <!-- 这是让哥哥的独家注解 -->\n" +
-            "        <from>John</from>\n" +
-            "        <heading>Reminder</heading>\n" +
-            "        <body id='2323232'>" +
-            "           <property name='message'>" +
-            "           Don't forget the meeting!" +
-            "           </property>" +
-            "        </body>\n" +
-            "    </note>\n" +
-            "</notes>" ;
+//    String xml = "<?xml version='1.1' " +
+//            "encoding='gb2312'?>'" +
+//            "<notes>\n" +
+//            "    <note>\n" +
+//            "        <to>George</to>\n" +
+//            "        <from>John</from>\n" +
+//            "        <heading id = \"=test\"  name = \"test\">Reminder</heading>\n" +
+//            "        <body>Don't forget the meeting!</body>\n" +
+//            "    </note>\n" +
+//            "    <note>\n" +
+//            "        <to>George</to>" +
+//            "        <!-- 这是独家注解 -->\n" +
+//            "        <from>John</from>\n" +
+//            "        <heading>Reminder</heading>\n" +
+//            "        <body id='2323232'>" +
+//            "           <property name='message'>" +
+//            "           Don't forget the meeting!" +
+//            "           </property>" +
+//            "        </body>\n" +
+//            "    </note>\n" +
+//            "</notes>" ;
+
+    String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+            "\n" +
+            "<deploy>\n" +
+            "  <deploy.path>/tmp/jar/</deploy.path>\n" +
+            "  <pid.file>/tmp/pid/</pid.file>\n" +
+            "  <mainClass class=\"com.kylinc.Main\">\n" +
+            "    <method name=\"main\">\n" +
+            "      <args>\n" +
+            "        <arg/>\n" +
+            "        <arg/>\n" +
+            "        <arg/>\n" +
+            "        <arg/>\n" +
+            "        <arg/>\n" +
+            "        <arg/>\n" +
+            "        <arg/>\n" +
+            "        <arg/>\n" +
+            "        <arg/>\n" +
+            "        <arg/>\n" +
+            "        <arg/>\n" +
+            "      </args>\n" +
+            "    </method>\n" +
+            "  </mainClass>\n" +
+            "</deploy>\n";
 
     @Test public void testSomeLibraryMethod() {
         Library classUnderTest = new Library();
